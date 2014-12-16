@@ -22,13 +22,13 @@ Gem::Specification.new do |s|
 
   s.add_dependency( "cucumber", ["~>1.3.10"] )
   s.add_dependency( "rspec", ["~>2.14.1"] )
-  s.add_dependency( "sim_launcher", ["~>0.4.6"] )
+  s.add_dependency( "sim_launcher", ["~>0.5.0"] )
   s.add_dependency( "i18n", ["~>0.6.9"] )
   s.add_dependency( "plist", ["~>3.1.0"] )
   s.add_dependency( "json", ["1.8.1"] ) # TODO: figure out how to be more permissive as to which JSON gems we allow
   s.add_dependency( "dnssd", ["~>2.0"] )
   s.add_dependency( "thor", ["~>0.18.1"] )
-  s.add_dependency( "xcodeproj", ["~>0.14.1"] )
+  s.add_dependency( "xcodeproj", ["~>0.20.2"] )
 
   s.add_development_dependency( "rr" )
   s.add_development_dependency( "yard" )
