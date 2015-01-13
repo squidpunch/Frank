@@ -20,19 +20,19 @@ end
 
 Then /^I should see a navigation bar titled "([^\"]*)"$/ do |expected_mark|
   quote = get_selector_quote(expected_mark)
-  check_element_exists( "navigationItemView marked:#{quote}#{expected_mark}#{quote}" )
+  quoted_text = "#{quote}#{expected_mark}#{quote}"
+  navigation_title_exists_with_text("#{quoted_text}").should be_true, "expected to see a navigation bar titled #{quoted_text}"
 end
 
-Then /^I wait to see a navigation bar titled "([^\"]*)"$/ do |expected_mark|
-  quote = get_selector_quote(expected_mark)
-  wait_until( :timeout => 30, :message => "waited to see a navigation bar titled #{quote}#{expected_mark}#{quote}" ) {
-    element_exists( "navigationItemView marked:#{quote}#{expected_mark}#{quote}" )
-  }
+Then /^I wait to see a navigation bar titled "([^\"]*)"$/ do |expected_title|
+  wait_until(message: "waited to see a navigation bar titled #{quoted_text}") do
+    navigation_title_with_text_exists(expected_title)
+  end
 end
 
 Then /^I wait to not see a navigation bar titled "([^\"]*)"$/ do |expected_mark|
   quote = get_selector_quote(expected_mark)
-  wait_until( :timeout => 30, :message => "waited to not see a navigation bar titled #{quote}#{expected_mark}#{quote}" ) {
+  wait_until( :message => "waited to not see a navigation bar titled #{quote}#{expected_mark}#{quote}" ) {
     !element_exists( "navigationItemView marked:#{quote}#{expected_mark}#{quote}" )
   }
 end
@@ -231,7 +231,11 @@ Then /^switch "([^\"]*)" should be (on|off)$/ do |mark,expected_state|
   switch_states = frankly_map( selector, "isOn" )
 
   switch_states.each do |switch_state|
-    switch_state.should == expected_state
+    if switch_state
+      [true, 1].should include expected_state
+    else
+      [false, 0].should include expected_state
+    end
   end
 end
 

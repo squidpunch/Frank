@@ -709,14 +709,18 @@ static const NSString* FEX_ParentAttribute = @"FEX_ParentAttribute";
 - (void) FEX_scrollToTop
 {
     [[self contentView] scrollToPoint: CGPointZero];
+    
+    [self reflectScrolledClipView: [self contentView]];
 }
 
 - (void) FEX_scrollToBottom
 {
     CGPoint maxContentOffset = CGPointZero;
-    maxContentOffset.y = [self contentSize].height - [self frame].size.height;
+    maxContentOffset.y = [[self contentView] documentRect].size.height - [self frame].size.height;
     
     [[self contentView] scrollToPoint: maxContentOffset];
+    
+    [self reflectScrolledClipView: [self contentView]];
 }
 
 
@@ -724,6 +728,8 @@ static const NSString* FEX_ParentAttribute = @"FEX_ParentAttribute";
                              y: (NSInteger) y
 {
     [[self contentView] scrollToPoint: CGPointMake(x, y)];
+    
+    [self reflectScrolledClipView: [self contentView]];
 }
 
 @end
@@ -827,7 +833,7 @@ static const NSString* FEX_IndexAttribute = @"FEX_IndexAttribute";
     CGRect visibleRect = [self visibleRect];
     NSRange rowRange = [self rowsInRect: visibleRect];
     
-    for (NSUInteger rowNum = rowRange.location; rowNum < rowRange.length; ++rowNum)
+    for (NSUInteger rowNum = rowRange.location; rowNum < rowRange.location + rowRange.length; ++rowNum)
     {
         CGRect rowRect = [self rectOfRow: rowNum];
         rowRect = NSIntersectionRect(rowRect, visibleRect);
@@ -929,7 +935,7 @@ static const NSString* FEX_IndexAttribute = @"FEX_IndexAttribute";
     NSRange rowRange = [self rowsInRect: visibleRect];
     id<NSOutlineViewDataSource> dataSource = [self dataSource];
     
-    for (NSUInteger rowNum = rowRange.location; rowNum < rowRange.length; ++rowNum)
+    for (NSUInteger rowNum = rowRange.location; rowNum < rowRange.location + rowRange.length; ++rowNum)
     {
         NSView* rowView = [self rowViewAtRow: rowNum makeIfNecessary: NO];
         

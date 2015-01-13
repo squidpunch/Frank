@@ -167,6 +167,7 @@ module Frank
     desc "launch", "open the Frankified app in the simulator"
     method_option :debug, :type => :boolean, :default => false
     method_option :idiom, :banner => 'iphone|ipad', :type => :string, :default => (ENV['FRANK_SIM_IDIOM'] || 'iphone')
+    method_option :sdk, :type => :string, :default => nil
     def launch
       $DEBUG = options[:debug]
       version = case options[:idiom].downcase
@@ -188,7 +189,7 @@ module Frank
 
         say "LAUNCHING APP..."
 
-        launch_app(frankified_app_dir, nil, version, false)
+        launch_app(frankified_app_dir, options[:sdk], version, false)
       end
     end
 
@@ -220,6 +221,18 @@ module Frank
       if console.check_for_running_app
         console.pry
       end
+    end
+
+    desc "authorize", "Permanently authorize your frankified app, and all apps with the same bundle identifier, to use the Mac accessibility API on 10.9 or later. Requires administrator privileges."
+    def authorize
+      bundle_id = get_mac_bundle_id
+      run %Q|sudo sqlite3 /Library/Application\\ Support/com.apple.TCC/TCC.db "INSERT or REPLACE INTO access values ('kTCCServiceAccessibility', '#{bundle_id}', 0, 1, 0, NULL);"|
+    end
+
+    desc "deauthorize", "Remove authorization for your frankified app, and all apps with the same bundle identifier, to use the Mac accessibility API on 10.9 or later. Requires administrator privileges."
+    def deauthorize
+      bundle_id = get_mac_bundle_id
+      run %Q|sudo sqlite3 /Library/Application\\ Support/com.apple.TCC/TCC.db "DELETE FROM access WHERE client = '#{bundle_id}'"|
     end
 
     private
@@ -283,6 +296,10 @@ module Frank
       each_plugin_path do |plugin_path|
         Frank::Plugins::Plugin.from_plugin_directory(plugin_path)
       end
+    end
+
+    def get_mac_bundle_id
+      bundle_id = `/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' Frank/frankified_build/Frankified.app/Contents/Info.plist`.chomp
     end
 
   end
